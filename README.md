@@ -4,7 +4,7 @@ A service that gets daily specials from [Arizmendi Bakery](http://www.arizmendi-
 
 ## Overview
 
-I firmly believe Arizmendi's Raspberry Chocolate Chip Scone to be among the greatest pastries ever created by humankind. Unfortunately I am not alone in this belief, as it—along with many other daily scones Arizmendi offers—regularly sell out within hours of them opening. 
+I firmly believe Arizmendi's Raspberry Chocolate Chip Scone to be among the greatest pastries ever created by humankind. Unfortunately I am not alone in this belief, as it—along with many other daily scones Arizmendi offers—regularly sells out within hours of them opening. 
 
 Instead of manually checking their daily scone calendar every few days and tracking the next time my favorite/elusive scone will be offered, I realized I could automate this process.
 
