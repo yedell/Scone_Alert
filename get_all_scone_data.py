@@ -8,12 +8,14 @@ User may provide specific date ranges to filter or a filepath to write JSON data
 via parameters for the function get_all_scone_data().
 
 Requirements:
-  - python `requests` package -> pip3 install requests
-  - python `pytz` package -> pip3 install pytz
+  - python `requests` package 
+  - python `pytz` package
+
+pip3 install requests pytz
 
 """
 
-from email_script import PACIFIC_TZ, API_URL
+from main_script import PACIFIC_TZ, API_URL
 import requests, json, time
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry 
