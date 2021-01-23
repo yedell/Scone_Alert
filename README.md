@@ -40,7 +40,7 @@ Follow these steps:
 
 - [ ] Add unit tests
 - [ ] Add `argparse` to run/input arguments on command line
-- [ ] Add exclusive ingredients match (to only get scone that contains several ingredients) -> intersection vs union
+- [x] Add exclusive ingredients match (to only get scone that contains several ingredients) -> intersection vs union
 - [ ] Implement fuzzy matching for misspellings and permutations
-- [ ] Clean up/refactor code (create Event class instead of dicts) & harden requests
+- [x] Clean up/refactor code (create Event class instead of dicts) & harden requests
 - [ ] Port to Google Apps Script
