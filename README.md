@@ -38,9 +38,9 @@ Follow these steps:
 
 ## Todo List
 
-- :heavy_plus_sign: Add unit tests
-- :heavy_plus_sign: Add `argparse` to run/input arguments on command line
-- :white_check_mark: Add exclusive ingredients match (to only get scone that contains several ingredients) -> intersection vs union
-- :heavy_plus_sign: Implement fuzzy matching for misspellings and permutations
-- :white_check_mark: Clean up/refactor code (create Event class instead of dicts) & harden requests
-- :heavy_plus_sign: Port to Google Apps Script
+:heavy_plus_sign: Add unit tests  
+:heavy_plus_sign: Add `argparse` to run/input arguments on command line  
+:white_check_mark: Add exclusive ingredients match (to only get scone that contains several ingredients) -> intersection vs union  
+:heavy_plus_sign: Implement fuzzy matching for misspellings and permutations  
+:white_check_mark: Clean up/refactor code (create Event class instead of dicts) & harden requests  
+:heavy_plus_sign: Port to Google Apps Script
