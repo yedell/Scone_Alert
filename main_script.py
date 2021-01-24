@@ -1,7 +1,7 @@
 """ Main Script
 
 This script fetches Arizmendi Bakery scones of the day for this current month
-from their website and stores the data in a dict. Can filter favorite scone
+from their website and stores the data in a list. Can filter favorite scone
 types and create Calendar events through Google Calendar API.
 
 Work in progress.
