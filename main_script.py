@@ -44,6 +44,40 @@ class Event:
     def __str__(self) -> str:
         return f"{self.name} scone event - {self.start_date:%m/%d/%y}"
 
+def make_http_request() -> dict:
+    """Makes HTTP GET request to API_URL with retries & backoff
+       - Returns JSON response data
+    """
+    month_year_in_pst = PST_NOW.strftime('%m-%Y')
+    api_query = {"month": month_year_in_pst, "collectionId": "55c92c3fe4b0837bc6c0a67b"}
+
+    
+    retry_strategy = Retry(
+        total = 4,
+        backoff_factor=2,
+        status_forcelist=[429, 500, 503, 504]
+    )
+
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("http://", adapter)
+
+    response = http.get(url=API_URL, params=api_query, timeout=10)
+    response.raise_for_status() # Raises exception if status is non-200 code
+
+    try:
+        current_month_json = response.json()
+        print("HTTP Request Success -> Retrieved Calendar Data")
+        
+        return current_month_json
+
+    except ValueError as err:
+        print(f"Uh oh! Didn't receive JSON response from HTTP request to URL: '{response.url}'")
+        print("-"*45)
+        print(response.text,"\n","-"*45,sep="")
+        raise(err)
+
+
 def get_rest_data_this_month(url=None, filter_future_events=True, filter_num_days_ahead=0) -> list:
     """Makes HTTP request to API_URL, goes through JSON list of calendar events/Scones for this month
        - url: optional, for running in 'online' mode with website URL
@@ -51,34 +85,9 @@ def get_rest_data_this_month(url=None, filter_future_events=True, filter_num_day
        - filter_num_days_ahead: optional, gets events up to # of days in future
        - Returns List of Scone Event objects
     """
-    month_year_in_pst = PST_NOW.strftime('%m-%Y')
-    api_query = {"month": month_year_in_pst, "collectionId": "55c92c3fe4b0837bc6c0a67b"}
 
     if url:
-        retry_strategy = Retry(
-            total = 4,
-            backoff_factor=2,
-            status_forcelist=[429, 500, 503, 504]
-        )
-
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        http = requests.Session()
-        http.mount("http://", adapter)
-
-        response = http.get(url=url, params=api_query, timeout=10)
-        response.raise_for_status() # Raises exception if status is non-200 code
-
-        try:
-            # current_month = requests.get(url, params=api_query).json()
-            current_month_json = response.json()
-            print("HTTP Request Success -> Retrieved Calendar Data")
-
-        except ValueError as err:
-            print(f"Uh oh! Didn't receive JSON response from HTTP request to URL: '{response.url}'")
-            print("-"*45)
-            print(response.text,"\n","-"*45,sep="")
-            raise(err)
-
+        current_month_json = make_http_request()
     else: # For testing in offline mode
         # List of calendar events this month
         current_month_json = json.load(open(r"resp_december.json"))
@@ -104,7 +113,7 @@ def get_rest_data_this_month(url=None, filter_future_events=True, filter_num_day
 
             scone_event_list.append(
                 Event(
-                    name=event_day["title"].lower(), 
+                    name=event_day["title"].lstrip().rstrip(),
                     start_date=event_date_start, 
                     end_date=event_date_end, 
                     url=event_day["fullUrl"]
@@ -176,20 +185,20 @@ def create_calendar_events(scone_list:list):
         s = ' '.join(word[0].upper() + word[1:] for word in s.split())
         return s
     
-    for scone_event in scone_list:
+    preorder_url = r"https://arizmendi-4th-street.square.site/product/scone-of-the-day/88"
 
-        relative_end = scone_event.start_date + timedelta(hours=3)
-        # TODO - make hours non-zero padded
-        hours = f"Hours: {scone_event.start_date.strftime('%I%p')} - {scone_event.end_date.strftime('%I%p')}"
+    for event in scone_list:
 
-        # TODO - add preorder link to description & change notification settings
+        relative_end = event.start_date + timedelta(hours=3)
+        hours = f"Hours: {event.start_date.hour%12} {event.start_date:%p} - {event.end_date.hour%12} {event.end_date:%p}"
+
         event_template = {
-            'summary': capitalize(scone_event.name) + " Scone @ Arizmendi",
+            'summary': capitalize(event.name) + " Scone @ Arizmendi",
             'location': 'Arizmendi Bakery & Cafe, San Rafael, CA, USA',
-            'description': f'{hours}\n\n{BASE_URL}{scone_event.url}\n\nAdded by Scone Alert',
+            'description': f'{hours}\n\n{BASE_URL}{event.url}\n\nPreorder:\n\n{preorder_url}\n\nAdded by Scone Alert',
             'start': {
-                'dateTime': scone_event.start_date.isoformat(),
-                'timeZone': scone_event.start_date.tzinfo.zone,
+                'dateTime': event.start_date.isoformat(),
+                'timeZone': event.start_date.tzinfo.zone,
             },
             'end': {
                 'dateTime': relative_end.isoformat(),
@@ -203,8 +212,9 @@ def create_calendar_events(scone_list:list):
             'reminders': {
                 'useDefault': False,
                 'overrides': [
-                {'method': 'email', 'minutes': 16 * 60},
-                {'method': 'popup', 'minutes': 10 * 60},
+                {'method': 'email', 'minutes': 24 * 60},
+                {'method': 'popup', 'minutes': 20 * 60},
+                {'method': 'popup', 'minutes': 5}
                 ],
             },
         }
@@ -221,6 +231,6 @@ if __name__ == "__main__":
     
     ingredients = ["raspberry", "chocolate"]
 
-    scone_event_list = filter_scones_inclusive(ingredients, scone_event_list)
+    scone_event_list = filter_scones_exclusive(ingredients, scone_event_list)
 
     create_calendar_events(scone_event_list)

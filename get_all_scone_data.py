@@ -1,8 +1,9 @@
 """ Get All Scone Data
 
+Created to feed my curiousity & extract insights from available historical data.
 This script fetches all Arizmendi Bakery scones of the day from their website,
-and for each scone, gets the dates they were available.
-All of this data is written to a JSON file.
+(going back years) and for each scone, gets the dates they were available.
+All of this data is written to a JSON file for data analysis.
 
 User may provide specific date ranges to filter or a filepath to write JSON data
 via parameters for the function get_all_scone_data().
@@ -84,16 +85,16 @@ def reduce_json_dict(big_dict:dict) -> dict:
     
     return reduced_dict
 
-def get_all_scone_data(start_date=datetime(2015,8,1), end_date=datetime(2021,1,1), filepath="scraped_data.json"):
+def get_all_scone_data(start_date=datetime(2015,8,1), end_date=datetime.now(), filepath="scraped_data.json"):
     """Gets all scone data from start_date (inclusive) to end_date (exclusive) and writes it to JSON file
        - start_date and end_date optional, if not provided gets data for all time
        - filepath param is path to JSON file for writing scraped data -> if not provided, creates and writes to file in current directory
     """
 
-    if start_date < datetime(2015, 8, 1) or end_date > datetime(2021, 1, 1):
-        raise ValueError(f"Illegal start/end date! start_date ({start_date.strftime('%m/%d/%Y')}) must be after 08/01/2015 and end_date ({end_date.strftime('%m/%d/%Y')}) must be before 01/01/2021.")
+    if start_date < datetime(2015, 8, 1) or end_date > datetime.now():
+        raise ValueError(f"Illegal start/end date! start_date ({start_date:%m/%d/%Y}) must be after 08/01/2015 and end_date ({end_date:%m/%d/%Y}) must be before today.")
 
-    print(f"Scraping scone data from {start_date.strftime('%m/%Y')} to {end_date.strftime('%m/%Y')}")
+    print(f"Scraping scone data from {start_date:%m/%Y} to {end_date:%m/%Y}")
     count_num_months = 0
 
     start_time = time.time()
@@ -106,7 +107,7 @@ def get_all_scone_data(start_date=datetime(2015,8,1), end_date=datetime(2021,1,1
 
     while start_date < end_date:
         # # For testing in offline mode
-        # data_for_this_month = json.load(open(r"C:\resp_december.json")) # List of calendar events for december
+        # data_for_this_month = json.load(open(r"resp_december.json")) # List of calendar events for december
 
         data_for_this_month = make_http_request(start_date)
 
